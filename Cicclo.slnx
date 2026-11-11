@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/Cicclo.Api.Tests/Cicclo.Api.Tests.csproj" />
+    <Project Path="backend/Cicclo.Api/Cicclo.Api.csproj" />
+  </Folder>
+</Solution>

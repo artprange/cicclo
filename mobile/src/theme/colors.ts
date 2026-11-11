@@ -1,0 +1,11 @@
+const Colors = {
+	PRIMARY: '#FA541C',
+	PRIMARY_DARK: '#B3200E',
+	PRIMARY_LIGHT: '#FEE9D1',
+	BACKGROUND: '#F4F6F8',
+	SURFACE: '#FFFFFF',
+	TEXT: '#1C252E',
+	TEXT_SECONDARY: '#637381',
+} as const;
+
+export { Colors };
