@@ -2,11 +2,19 @@ namespace Cicclo.Api.Domain;
 
 public sealed class DemoSession
 {
-    public Guid Id {get;}
-    public Money Balance {get; private set;}
-    public DemoSession()
+    private readonly object _syncRoot = new();
+    private Money _balance = new(5000);
+
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public Money Balance
     {
-        Id = Guid.NewGuid();
-        Balance = new Money(5000);
+        get
+        {
+            lock (_syncRoot)
+            {
+                return _balance;
+            }
+        }
     }
 }
