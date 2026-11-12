@@ -5,7 +5,8 @@ using Xunit;
 
 namespace Cicclo.Api.Tests;
 
-public sealed class ApiStartupTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class ApiStartupTests
+    : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
 
@@ -15,20 +16,23 @@ public sealed class ApiStartupTests : IClassFixture<WebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task Root_ReturnsApplicationIdentity()
+    public async Task Health_ReturnsOkWithoutSession()
     {
         using var client = _factory.CreateClient();
 
-        using var response = await client.GetAsync("/");
+        using var response = await client.GetAsync("/healthz");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(
+            "application/json",
+            response.Content.Headers.ContentType?.MediaType);
 
         var body = await response.Content
-            .ReadFromJsonAsync<ApplicationIdentity>();
+            .ReadFromJsonAsync<HealthResponse>();
 
         Assert.NotNull(body);
-        Assert.Equal("Cicclo.Api", body.Name);
+        Assert.Equal("ok", body.Status);
     }
 
-    private sealed record ApplicationIdentity(string Name);
+    private sealed record HealthResponse(string Status);
 }

@@ -1,8 +1,8 @@
+using Cicclo.Api.Features.Orders;
 using Cicclo.Api.Features.Services;
 using Cicclo.Api.Features.Sessions;
 using Cicclo.Api.Features.Wallet;
 using Cicclo.Api.Infrastructure;
-using Cicclo.Api.Features.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,11 +31,6 @@ if (builder.Environment.IsDevelopment())
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors(LocalWebCorsPolicy);
-}
-
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(context =>
@@ -50,9 +45,17 @@ app.UseExceptionHandler(errorApp =>
         .ExecuteAsync(context));
 });
 
-app.MapGet("/", () => Results.Ok(new
+if (app.Environment.IsDevelopment())
 {
-    name = "Cicclo.Api"
+    app.UseCors(LocalWebCorsPolicy);
+}
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapGet("/healthz", () => Results.Ok(new
+{
+    status = "ok"
 }));
 
 app.MapGet("/api/services", () =>
@@ -102,7 +105,9 @@ app.MapGet("/api/wallet", IResult (
 
     return Results.Ok(new WalletResponse(balance.Cents));
 });
+
 app.MapOrderEndpoints();
+
 app.MapPost("/api/demo/sessions/reset", IResult (
     HttpRequest request,
     InMemoryDemoStore store) =>
@@ -125,6 +130,21 @@ app.MapPost("/api/demo/sessions/reset", IResult (
 
     return Results.Ok(new WalletResponse(balance.Cents));
 });
+
+RequestDelegate endpointNotFound = context =>
+    Results.Problem(
+        statusCode: StatusCodes.Status404NotFound,
+        title: "Endpoint não encontrado",
+        detail: "O endereço solicitado não corresponde a um endpoint disponível.",
+        extensions: new Dictionary<string, object?>
+        {
+            ["code"] = "ENDPOINT_NOT_FOUND"
+        })
+    .ExecuteAsync(context);
+
+app.MapFallback("/api/{**path}", endpointNotFound);
+app.MapFallback("/healthz/{**path}", endpointNotFound);
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
