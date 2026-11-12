@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import {
+	ActivityIndicator,
 	Modal,
 	ScrollView,
 	Text,
@@ -10,8 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionButton } from '../../components/ActionButton';
 import { ButtonVariantEnum } from '../../components/ActionButton/types';
-import { PreviewData } from '../../demo/previewData';
-import type { LaundryService } from '../../demo/previewData';
+import { useDemoWallet } from '../../hooks/useDemoWallet';
+import { Colors } from '../../theme/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { styles } from './styles';
 
@@ -23,33 +23,25 @@ function WalletScreen() {
 	const { width } = useWindowDimensions();
 	const isCompact = width < ScreenConstants.COMPACT_WIDTH;
 
-	const [selectedService, setSelectedService] = useState<LaundryService | null>(
-		null,
-	);
+	const {
+		services,
+		balanceCents,
+		selectedService,
+		isLoading,
+		isSubmitting,
+		requiresNewSession,
+		loadError,
+		purchaseError,
+		feedback,
+		canPurchase,
+		loadDemo,
+		selectService,
+		closeConfirmation,
+		confirmPurchase,
+	} = useDemoWallet();
 
-	const [feedback, setFeedback] = useState<string | null>(null);
-
-	function handleSelectService(service: LaundryService) {
-		setFeedback(null);
-		setSelectedService(service);
-	}
-
-	function handleCloseConfirmation() {
-		setSelectedService(null);
-	}
-
-	function handleConfirmPreview() {
-		if (selectedService === null) {
-			return;
-		}
-
-		setFeedback(
-			`Prévia de ${selectedService.name.toLowerCase()} concluída. ` +
-				'Nenhuma solicitação foi enviada e o saldo não foi alterado.',
-		);
-
-		setSelectedService(null);
-	}
+	const balanceLabel =
+		balanceCents === null ? '—' : formatCurrency(balanceCents);
 
 	return (
 		<>
@@ -89,12 +81,14 @@ function WalletScreen() {
 
 							<Text
 								accessibilityLabel={
-									`Saldo ilustrativo: ` +
-									formatCurrency(PreviewData.BALANCE_CENTS)
+									balanceCents === null
+										? 'Saldo indisponível'
+										: `Saldo disponível: ${balanceLabel}`
 								}
+								accessibilityLiveRegion="polite"
 								style={styles.balanceValue}
 							>
-								{formatCurrency(PreviewData.BALANCE_CENTS)}
+								{balanceLabel}
 							</Text>
 
 							<Text style={styles.balanceCaption}>
@@ -102,51 +96,21 @@ function WalletScreen() {
 							</Text>
 						</View>
 
-						<View style={styles.sectionHeading}>
-							<Text
-								accessibilityRole="header"
-								style={styles.sectionTitle}
-							>
-								Serviços disponíveis
-							</Text>
+						{isLoading && (
+							<View style={styles.sectionHeading}>
+								<ActivityIndicator
+									size="large"
+									color={Colors.PRIMARY_DARK}
+								/>
 
-							<Text style={styles.description}>
-								Um cuidado para cada etapa.
-							</Text>
-						</View>
-
-						<View
-							style={[styles.services, isCompact && styles.servicesStacked]}
-						>
-							{PreviewData.SERVICES.map((service) => (
-								<View
-									key={service.id}
-									style={styles.serviceCard}
+								<Text
+									accessibilityLiveRegion="polite"
+									style={styles.description}
 								>
-									<Text style={styles.serviceEyebrow}>AUTOATENDIMENTO</Text>
-
-									<Text
-										accessibilityRole="header"
-										style={styles.serviceName}
-									>
-										{service.name}
-									</Text>
-
-									<Text style={styles.servicePrice}>
-										{formatCurrency(service.priceCents)}
-									</Text>
-
-									<Text style={styles.serviceCaption}>
-										Valor por solicitação
-									</Text>
-
-									<ActionButton
-										label={`Solicitar ${service.name.toLowerCase()}`}
-										onPress={() => handleSelectService(service)}
-									/>
-								</View>
-							))}
-						</View>
+									Carregando sua demonstração…
+								</Text>
+							</View>
+						)}
 
 						{feedback !== null && (
 							<View style={styles.feedback}>
@@ -159,12 +123,86 @@ function WalletScreen() {
 							</View>
 						)}
 
+						{loadError !== null && (
+							<View style={styles.feedback}>
+								<Text
+									accessibilityRole="alert"
+									style={styles.feedbackText}
+								>
+									{loadError}
+								</Text>
+							</View>
+						)}
+
+						{!isLoading && (requiresNewSession || loadError !== null) && (
+							<ActionButton
+								label={
+									requiresNewSession
+										? 'Criar nova demonstração'
+										: 'Tentar novamente'
+								}
+								onPress={() => void loadDemo()}
+							/>
+						)}
+
+						{!isLoading && !requiresNewSession && loadError === null && (
+							<>
+								<View style={styles.sectionHeading}>
+									<Text
+										accessibilityRole="header"
+										style={styles.sectionTitle}
+									>
+										Serviços disponíveis
+									</Text>
+
+									<Text style={styles.description}>
+										Um cuidado para cada etapa.
+									</Text>
+								</View>
+
+								<View
+									style={[styles.services, isCompact && styles.servicesStacked]}
+								>
+									{services.map((service) => (
+										<View
+											key={service.id}
+											style={styles.serviceCard}
+										>
+											<Text style={styles.serviceEyebrow}>AUTOATENDIMENTO</Text>
+
+											<Text
+												accessibilityRole="header"
+												style={styles.serviceName}
+											>
+												{service.name}
+											</Text>
+
+											<Text style={styles.servicePrice}>
+												{formatCurrency(service.priceCents)}
+											</Text>
+
+											<Text style={styles.serviceCaption}>
+												Valor por solicitação
+											</Text>
+
+											<ActionButton
+												label={`Solicitar ${service.name.toLowerCase()}`}
+												disabled={!canPurchase}
+												onPress={() => selectService(service)}
+											/>
+										</View>
+									))}
+								</View>
+							</>
+						)}
+
 						<View style={styles.previewNotice}>
-							<Text style={styles.previewTitle}>Prévia da interface</Text>
+							<Text style={styles.previewTitle}>Sobre esta demonstração</Text>
 
 							<Text style={styles.description}>
-								Os valores são ilustrativos. Nesta etapa, as solicitações não
-								são enviadas e o saldo permanece inalterado.
+								As solicitações usam uma carteira fictícia. Reiniciar o servidor
+								apaga as sessões e seus saldos. Nenhuma máquina física é
+								acionada.
 							</Text>
 						</View>
 					</View>
@@ -175,7 +213,7 @@ function WalletScreen() {
 				visible={selectedService !== null}
 				transparent
 				animationType="fade"
-				onRequestClose={handleCloseConfirmation}
+				onRequestClose={closeConfirmation}
 			>
 				<SafeAreaView style={styles.overlay}>
 					<ScrollView contentContainerStyle={styles.modalContainer}>
@@ -202,20 +240,44 @@ function WalletScreen() {
 								</View>
 
 								<Text style={styles.description}>
-									Esta é uma prévia. Confirmar não descontará saldo nem iniciará
-									uma máquina.
+									O valor será descontado da sua carteira fictícia após a
+									confirmação da solicitação.
 								</Text>
+
+								{purchaseError !== null && (
+									<Text
+										accessibilityRole="alert"
+										style={styles.feedbackText}
+									>
+										{purchaseError}
+									</Text>
+								)}
+
+								{isSubmitting && (
+									<ActivityIndicator
+										color={Colors.PRIMARY_DARK}
+										accessibilityLabel="Enviando solicitação"
+									/>
+								)}
 
 								<View style={styles.modalActions}>
 									<ActionButton
-										label="Confirmar prévia"
-										onPress={handleConfirmPreview}
+										label={
+											isSubmitting
+												? 'Enviando…'
+												: purchaseError !== null
+													? 'Tentar novamente'
+													: 'Confirmar solicitação'
+										}
+										disabled={isSubmitting}
+										onPress={() => void confirmPurchase()}
 									/>
 
 									<ActionButton
 										label="Voltar"
 										variant={ButtonVariantEnum.SECONDARY}
-										onPress={handleCloseConfirmation}
+										disabled={isSubmitting || purchaseError !== null}
+										onPress={closeConfirmation}
 									/>
 								</View>
 							</View>
