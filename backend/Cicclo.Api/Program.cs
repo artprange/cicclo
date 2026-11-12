@@ -2,12 +2,26 @@ using Cicclo.Api.Features.Services;
 using Cicclo.Api.Features.Sessions;
 using Cicclo.Api.Features.Wallet;
 using Cicclo.Api.Infrastructure;
+using Cicclo.Api.Features.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<InMemoryDemoStore>();
 
 var app = builder.Build();
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(context =>
+        Results.Problem(
+            statusCode: StatusCodes.Status500InternalServerError,
+            title: "Erro interno",
+            detail: "Não foi possível concluir a solicitação.",
+            extensions: new Dictionary<string, object?>
+            {
+                ["code"] = "INTERNAL_ERROR"
+            })
+        .ExecuteAsync(context));
+});
 
 app.MapGet("/", () => Results.Ok(new
 {
@@ -61,6 +75,7 @@ app.MapGet("/api/wallet", IResult (
 
     return Results.Ok(new WalletResponse(balance.Cents));
 });
+app.MapOrderEndpoints();
 
 app.Run();
 

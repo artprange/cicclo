@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Cicclo.Api.Domain;
+using Cicclo.Api.Features.Services;
 
 namespace Cicclo.Api.Infrastructure;
 
@@ -30,5 +31,21 @@ public sealed class InMemoryDemoStore
 
         balance = default;
         return false;
+    }
+
+    public OrderResult PlaceOrder(
+        Guid sessionId,
+        string serviceId,
+        Guid idempotencyKey)
+    {
+        if (!_sessions.TryGetValue(sessionId, out var session))
+        {
+            return OrderResult.Failure(OrderError.SessionNotFound);
+        }
+
+        return session.PlaceOrder(
+            serviceId,
+            idempotencyKey,
+            ServiceCatalog.All);
     }
 }
