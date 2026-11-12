@@ -8,7 +8,34 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<InMemoryDemoStore>();
 
+const string LocalWebCorsPolicy = "LocalWeb";
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(LocalWebCorsPolicy, policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:8081",
+                    "http://127.0.0.1:8081")
+                .WithMethods("GET", "POST")
+                .WithHeaders(
+                    "Content-Type",
+                    "X-Demo-Session",
+                    "Idempotency-Key");
+        });
+    });
+}
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(LocalWebCorsPolicy);
+}
+
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(context =>
