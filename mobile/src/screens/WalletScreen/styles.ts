@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		maxWidth: 960,
 		gap: 28,
+		paddingBottom: 96,
 	},
 	header: {
 		flexDirection: 'row',
@@ -135,10 +136,7 @@ const styles = StyleSheet.create({
 		lineHeight: 23,
 		color: Colors.PRIMARY_DARKER,
 	},
-	previewNotice: {
-		gap: 6,
-		paddingBottom: 12,
-	},
+
 	previewTitle: {
 		fontSize: 14,
 		fontWeight: '700',
@@ -180,6 +178,34 @@ const styles = StyleSheet.create({
 	},
 	modalActions: {
 		gap: 12,
+	},
+	toast: {
+		position: 'absolute',
+		alignSelf: 'center',
+		width: '90%',
+		maxWidth: 600,
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+		padding: 16,
+		borderRadius: 16,
+		backgroundColor: Colors.TEXT,
+	},
+	toastText: {
+		flex: 1,
+		fontSize: 14,
+		lineHeight: 21,
+		color: Colors.SURFACE,
+	},
+	toastClose: {
+		minHeight: 44,
+		justifyContent: 'center',
+		paddingHorizontal: 8,
+	},
+	toastCloseText: {
+		fontSize: 14,
+		fontWeight: '700',
+		color: Colors.SURFACE,
 	},
 });
 

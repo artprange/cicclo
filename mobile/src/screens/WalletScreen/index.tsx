@@ -1,17 +1,20 @@
 import {
-	ActivityIndicator,
 	Modal,
+	Pressable,
 	ScrollView,
 	Text,
 	View,
 	useWindowDimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+	SafeAreaView,
+	useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
 import { ActionButton } from '../../components/ActionButton';
 import { ButtonVariantEnum } from '../../components/ActionButton/types';
+import { WalletSkeleton } from '../../components/WalletSkeleton';
 import { useDemoWallet } from '../../hooks/useDemoWallet';
-import { Colors } from '../../theme/colors';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { styles } from './styles';
 
@@ -21,6 +24,7 @@ const ScreenConstants = {
 
 function WalletScreen() {
 	const { width } = useWindowDimensions();
+	const insets = useSafeAreaInsets();
 	const isCompact = width < ScreenConstants.COMPACT_WIDTH;
 
 	const {
@@ -29,19 +33,37 @@ function WalletScreen() {
 		selectedService,
 		isLoading,
 		isSubmitting,
+		isResetOpen,
 		requiresNewSession,
 		loadError,
-		purchaseError,
+		operationError,
+		dialogError,
 		feedback,
-		canPurchase,
+		canInteract,
 		loadDemo,
 		selectService,
-		closeConfirmation,
-		confirmPurchase,
+		openReset,
+		closeDialog,
+		confirmOperation,
+		dismissFeedback,
 	} = useDemoWallet();
 
 	const balanceLabel =
 		balanceCents === null ? '—' : formatCurrency(balanceCents);
+
+	const modalVisible = selectedService !== null || isResetOpen;
+
+	const dialogTitle =
+		dialogError?.title ??
+		(isResetOpen ? 'Reiniciar demonstração?' : 'Conferir solicitação');
+
+	const confirmLabel = isSubmitting
+		? 'Aguarde…'
+		: operationError !== null
+			? 'Tentar novamente'
+			: isResetOpen
+				? 'Reiniciar demonstração'
+				: 'Confirmar solicitação';
 
 	return (
 		<>
@@ -76,77 +98,46 @@ function WalletScreen() {
 							</Text>
 						</View>
 
-						<View style={styles.balanceCard}>
-							<Text style={styles.balanceLabel}>Saldo da demonstração</Text>
-
-							<Text
-								accessibilityLabel={
-									balanceCents === null
-										? 'Saldo indisponível'
-										: `Saldo disponível: ${balanceLabel}`
-								}
-								accessibilityLiveRegion="polite"
-								style={styles.balanceValue}
-							>
-								{balanceLabel}
-							</Text>
-
-							<Text style={styles.balanceCaption}>
-								Carteira fictícia · sem pagamentos reais
-							</Text>
-						</View>
-
-						{isLoading && (
+						{isLoading ? (
+							<WalletSkeleton compact={isCompact} />
+						) : requiresNewSession || loadError !== null ? (
 							<View style={styles.sectionHeading}>
-								<ActivityIndicator
-									size="large"
-									color={Colors.PRIMARY_DARK}
-								/>
-
-								<Text
-									accessibilityLiveRegion="polite"
-									style={styles.description}
-								>
-									Carregando sua demonstração…
-								</Text>
-							</View>
-						)}
-
-						{feedback !== null && (
-							<View style={styles.feedback}>
-								<Text
-									accessibilityLiveRegion="polite"
-									style={styles.feedbackText}
-								>
-									{feedback}
-								</Text>
-							</View>
-						)}
-
-						{loadError !== null && (
-							<View style={styles.feedback}>
 								<Text
 									accessibilityRole="alert"
-									style={styles.feedbackText}
+									style={styles.description}
 								>
-									{loadError}
+									{requiresNewSession
+										? 'Sua sessão não está mais disponível. O servidor pode ter sido reiniciado. Crie uma nova demonstração para continuar.'
+										: loadError}
 								</Text>
+
+								<ActionButton
+									label={
+										requiresNewSession
+											? 'Criar nova demonstração'
+											: 'Tentar novamente'
+									}
+									onPress={() => void loadDemo()}
+								/>
 							</View>
-						)}
-
-						{!isLoading && (requiresNewSession || loadError !== null) && (
-							<ActionButton
-								label={
-									requiresNewSession
-										? 'Criar nova demonstração'
-										: 'Tentar novamente'
-								}
-								onPress={() => void loadDemo()}
-							/>
-						)}
-
-						{!isLoading && !requiresNewSession && loadError === null && (
+						) : (
 							<>
+								<View style={styles.balanceCard}>
+									<Text style={styles.balanceLabel}>Saldo da demonstração</Text>
+
+									<Text
+										accessibilityLabel={`Saldo disponível: ${balanceLabel}`}
+										accessibilityLiveRegion="polite"
+										style={styles.balanceValue}
+									>
+										{balanceLabel}
+									</Text>
+
+									<Text style={styles.balanceCaption}>
+										Carteira fictícia · sem pagamentos reais
+									</Text>
+								</View>
+
 								<View style={styles.sectionHeading}>
 									<Text
 										accessibilityRole="header"
@@ -187,101 +178,129 @@ function WalletScreen() {
 
 											<ActionButton
 												label={`Solicitar ${service.name.toLowerCase()}`}
-												disabled={!canPurchase}
+												disabled={!canInteract}
 												onPress={() => selectService(service)}
 											/>
 										</View>
 									))}
 								</View>
+
+								<ActionButton
+									label="Reiniciar demonstração"
+									variant={ButtonVariantEnum.SECONDARY}
+									disabled={!canInteract}
+									onPress={openReset}
+								/>
 							</>
 						)}
-
-						<View style={styles.previewNotice}>
-							<Text style={styles.previewTitle}>Sobre esta demonstração</Text>
-
-							<Text style={styles.description}>
-								As solicitações usam uma carteira fictícia. Reiniciar o servidor
-								apaga as sessões e seus saldos. Nenhuma máquina física é
-								acionada.
-							</Text>
-						</View>
 					</View>
 				</ScrollView>
+
+				{feedback !== null && (
+					<View style={[styles.toast, { bottom: insets.bottom + 16 }]}>
+						<Text
+							accessibilityLiveRegion="polite"
+							style={styles.toastText}
+						>
+							{feedback.text}
+						</Text>
+
+						<Pressable
+							accessibilityRole="button"
+							accessibilityLabel="Fechar mensagem"
+							onPress={dismissFeedback}
+							style={styles.toastClose}
+						>
+							<Text style={styles.toastCloseText}>Fechar</Text>
+						</Pressable>
+					</View>
+				)}
 			</SafeAreaView>
 
 			<Modal
-				visible={selectedService !== null}
+				visible={modalVisible}
 				transparent
 				animationType="fade"
-				onRequestClose={closeConfirmation}
+				onRequestClose={closeDialog}
 			>
 				<SafeAreaView style={styles.overlay}>
 					<ScrollView contentContainerStyle={styles.modalContainer}>
-						{selectedService !== null && (
-							<View
-								accessibilityViewIsModal
-								style={styles.modalCard}
+						<View
+							accessibilityViewIsModal
+							style={styles.modalCard}
+						>
+							<Text style={styles.serviceEyebrow}>
+								{dialogError !== null ? 'ATENÇÃO' : 'CONFIRMAÇÃO'}
+							</Text>
+
+							<Text
+								accessibilityRole="header"
+								accessibilityLiveRegion="polite"
+								style={styles.modalTitle}
 							>
-								<Text style={styles.serviceEyebrow}>CONFIRMAÇÃO</Text>
+								{dialogTitle}
+							</Text>
 
-								<Text
-									accessibilityRole="header"
-									style={styles.modalTitle}
-								>
-									Conferir solicitação
-								</Text>
-
-								<View style={styles.summary}>
-									<Text style={styles.serviceName}>{selectedService.name}</Text>
-
-									<Text style={styles.summaryPrice}>
-										{formatCurrency(selectedService.priceCents)}
-									</Text>
-								</View>
-
-								<Text style={styles.description}>
-									O valor será descontado da sua carteira fictícia após a
-									confirmação da solicitação.
-								</Text>
-
-								{purchaseError !== null && (
+							{dialogError !== null ? (
+								<>
 									<Text
 										accessibilityRole="alert"
-										style={styles.feedbackText}
+										style={styles.description}
 									>
-										{purchaseError}
+										{dialogError.message}
 									</Text>
-								)}
-
-								{isSubmitting && (
-									<ActivityIndicator
-										color={Colors.PRIMARY_DARK}
-										accessibilityLabel="Enviando solicitação"
-									/>
-								)}
-
-								<View style={styles.modalActions}>
-									<ActionButton
-										label={
-											isSubmitting
-												? 'Enviando…'
-												: purchaseError !== null
-													? 'Tentar novamente'
-													: 'Confirmar solicitação'
-										}
-										disabled={isSubmitting}
-										onPress={() => void confirmPurchase()}
-									/>
 
 									<ActionButton
-										label="Voltar"
-										variant={ButtonVariantEnum.SECONDARY}
-										disabled={isSubmitting || purchaseError !== null}
-										onPress={closeConfirmation}
+										label="Entendi"
+										onPress={closeDialog}
 									/>
-								</View>
-							</View>
-						)}
+								</>
+							) : (
+								<>
+									{selectedService !== null && (
+										<View style={styles.summary}>
+											<Text style={styles.serviceName}>
+												{selectedService.name}
+											</Text>
+
+											<Text style={styles.summaryPrice}>
+												{formatCurrency(selectedService.priceCents)}
+											</Text>
+										</View>
+									)}
+
+									<Text style={styles.description}>
+										{isResetOpen
+											? 'O saldo desta sessão voltará ao valor inicial e as solicitações anteriores serão apagadas. Outras sessões não serão afetadas.'
+											: 'O valor será descontado da sua carteira fictícia após a confirmação da solicitação.'}
+									</Text>
+
+									{operationError !== null && (
+										<Text
+											accessibilityRole="alert"
+											style={styles.feedbackText}
+										>
+											{operationError}
+										</Text>
+									)}
+
+									<View style={styles.modalActions}>
+										<ActionButton
+											label={confirmLabel}
+											loading={isSubmitting}
+											onPress={() => void confirmOperation()}
+										/>
+
+										<ActionButton
+											label="Voltar"
+											variant={ButtonVariantEnum.SECONDARY}
+											disabled={isSubmitting || operationError !== null}
+											onPress={closeDialog}
+										/>
+									</View>
+								</>
+							)}
+						</View>
 					</ScrollView>
 				</SafeAreaView>
 			</Modal>

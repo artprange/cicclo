@@ -3,12 +3,13 @@ enum ButtonVariantEnum {
 	SECONDARY = 'secondary',
 }
 
-interface ActionButtonProps {
+type ActionButtonProps = {
 	label: string;
 	onPress: () => void;
 	disabled?: boolean;
 	variant?: ButtonVariantEnum;
-}
+	loading?: boolean;
+};
 
 export { ButtonVariantEnum };
 export type { ActionButtonProps };

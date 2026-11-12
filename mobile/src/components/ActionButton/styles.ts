@@ -11,6 +11,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 20,
 		paddingVertical: 14,
 		backgroundColor: Colors.PRIMARY_DARK,
+		flexDirection: 'row',
+		gap: 10,
 	},
 	secondary: {
 		backgroundColor: Colors.BACKGROUND,
@@ -28,6 +30,7 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '700',
 		textAlign: 'center',
+		flexShrink: 1,
 	},
 	secondaryLabel: {
 		color: Colors.TEXT,
