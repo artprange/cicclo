@@ -103,6 +103,28 @@ app.MapGet("/api/wallet", IResult (
     return Results.Ok(new WalletResponse(balance.Cents));
 });
 app.MapOrderEndpoints();
+app.MapPost("/api/demo/sessions/reset", IResult (
+    HttpRequest request,
+    InMemoryDemoStore store) =>
+{
+    var sessionHeader = request.Headers["X-Demo-Session"];
+
+    if (sessionHeader.Count != 1 ||
+        !Guid.TryParse(sessionHeader[0], out var sessionId) ||
+        !store.TryResetSession(sessionId, out var balance))
+    {
+        return Results.Problem(
+            statusCode: StatusCodes.Status404NotFound,
+            title: "Sessão não encontrada",
+            detail: "Crie uma nova sessão de demonstração para continuar.",
+            extensions: new Dictionary<string, object?>
+            {
+                ["code"] = "SESSION_NOT_FOUND"
+            });
+    }
+
+    return Results.Ok(new WalletResponse(balance.Cents));
+});
 
 app.Run();
 

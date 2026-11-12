@@ -18,16 +18,17 @@ const ApiRoutes = {
 	SESSIONS: '/api/demo/sessions',
 	WALLET: '/api/wallet',
 	ORDERS: '/api/orders',
+	RESET: '/api/demo/sessions/reset',
 } as const;
 
-interface RequestOptions {
+type RequestOptions = {
 	method?: 'GET' | 'POST';
 	sessionId?: string;
 	idempotencyKey?: string;
 	body?: {
 		serviceId: string;
 	};
-}
+};
 
 class ApiError extends Error {
 	constructor(
@@ -174,4 +175,18 @@ function createOrder(
 	});
 }
 
-export { ApiError, getServices, createSession, getWallet, createOrder };
+function resetSession(sessionId: string) {
+	return request(ApiRoutes.RESET, isWallet, {
+		method: 'POST',
+		sessionId,
+	});
+}
+
+export {
+	ApiError,
+	getServices,
+	createSession,
+	getWallet,
+	createOrder,
+	resetSession,
+};

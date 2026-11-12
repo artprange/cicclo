@@ -1,10 +1,25 @@
 import type { LaundryService } from '../../api/types';
 
-interface PurchaseIntent {
+type PurchaseIntent = {
 	sessionId: string;
 	service: LaundryService;
 	idempotencyKey: string;
 	submitted: boolean;
-}
+};
 
-export type { PurchaseIntent };
+type ResetIntent = {
+	sessionId: string;
+	submitted: boolean;
+};
+
+type DialogError = {
+	title: string;
+	message: string;
+};
+
+type FeedbackMessage = {
+	id: number;
+	text: string;
+};
+
+export type { PurchaseIntent, ResetIntent, DialogError, FeedbackMessage };

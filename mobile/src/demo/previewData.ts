@@ -1,13 +1,13 @@
-interface LaundryService {
+type LaundryService = {
 	id: string;
 	name: string;
 	priceCents: number;
-}
+};
 
-interface DemoPreviewData {
+type DemoPreviewData = {
 	BALANCE_CENTS: number;
 	SERVICES: readonly LaundryService[];
-}
+};
 
 const PreviewData = {
 	BALANCE_CENTS: 5000,

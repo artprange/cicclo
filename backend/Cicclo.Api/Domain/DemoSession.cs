@@ -83,4 +83,15 @@ public sealed class DemoSession
 
         return OrderResult.Success(order);
     }
+
+    public Money Reset()
+{
+    lock (_syncRoot)
+    {
+        _requests.Clear();
+        _balance = new Money(5000);
+
+        return _balance;
+    }
+}
 }

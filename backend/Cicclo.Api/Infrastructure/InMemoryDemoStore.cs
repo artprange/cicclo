@@ -48,4 +48,17 @@ public sealed class InMemoryDemoStore
             idempotencyKey,
             ServiceCatalog.All);
     }
+
+    public bool TryResetSession(Guid sessionId, out Money balance)
+{
+    if (_sessions.TryGetValue(sessionId, out var session))
+    {
+        balance = session.Reset();
+        return true;
+    }
+
+    balance = default;
+    return false;
 }
+}
+
