@@ -76,7 +76,7 @@ function WalletSkeleton({ compact }: WalletSkeletonProps) {
 			accessibilityState={{ busy: true }}
 			style={[styles.container, { opacity }]}
 		>
-			<View style={styles.balance} />
+			<View style={[styles.balance, compact && styles.balanceCompact]} />
 			<View style={styles.heading} />
 
 			<View style={[styles.cards, compact && styles.stacked]}>

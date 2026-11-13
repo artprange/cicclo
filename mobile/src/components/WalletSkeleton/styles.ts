@@ -58,6 +58,10 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		backgroundColor: Colors.BORDER,
 	},
+	balanceCompact: {
+		height: 76,
+		borderRadius: 16,
+	},
 });
 
 export { styles };

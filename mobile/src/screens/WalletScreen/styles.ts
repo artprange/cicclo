@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		fontSize: 28,
-		fontWeight: '700',
+		fontWeight: '500',
 		color: Colors.TEXT,
 	},
 	description: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 	},
 	sectionTitle: {
 		fontSize: 22,
-		fontWeight: '700',
+		fontWeight: '500',
 		color: Colors.TEXT,
 	},
 	services: {
@@ -232,6 +232,60 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '700',
 		color: Colors.SURFACE,
+	},
+	mobileNavbar: {
+		minHeight: 56,
+		paddingHorizontal: 20,
+		paddingVertical: 8,
+		justifyContent: 'center',
+		backgroundColor: Colors.BACKGROUND,
+		borderBottomWidth: 1,
+		borderBottomColor: Colors.BORDER,
+	},
+	contentCompact: {
+		gap: 20,
+	},
+	titleCompact: {
+		fontSize: 23,
+		lineHeight: 30,
+	},
+	balanceCardCompact: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingHorizontal: 18,
+		paddingVertical: 16,
+		borderRadius: 16,
+		gap: 12,
+	},
+	walletDetailsCompact: {
+		gap: 4,
+	},
+	walletTitleCompact: {
+		fontSize: 16,
+		fontWeight: '700',
+		color: Colors.SURFACE,
+	},
+	balanceLabelCompact: {
+		fontSize: 12,
+		color: Colors.SURFACE,
+	},
+	balanceValueCompact: {
+		fontSize: 28,
+		fontWeight: '800',
+		color: Colors.SURFACE,
+	},
+	headingWithIcon: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	headingText: {
+		flexShrink: 1,
+	},
+	walletHeadingText: {
+		marginBottom: 0,
 	},
 });
 
