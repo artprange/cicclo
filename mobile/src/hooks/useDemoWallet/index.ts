@@ -263,7 +263,10 @@ function useDemoWallet() {
 				setBalanceCents(order.balanceAfterCents);
 				clearDialog();
 
-				showFeedback(`Solicitação de ${purchase.service.name.toLowerCase()} `);
+				showFeedback(
+					`Solicitação de ${purchase.service.name.toLowerCase()} ` +
+						'concluída!',
+				);
 			}
 		} catch (error) {
 			if (

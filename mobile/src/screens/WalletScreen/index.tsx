@@ -321,7 +321,7 @@ function WalletScreen() {
 									<Text style={styles.description}>
 										{isResetOpen
 											? 'O saldo desta sessão voltará ao valor inicial e as solicitações anteriores serão apagadas. Outras sessões não serão afetadas.'
-											: 'O valor será descontado da sua carteira após a confirmação. Nenhuma máquina física será acionada.'}
+											: 'O valor será descontado da sua carteira após a confirmação.'}
 									</Text>
 
 									{operationError !== null && (
