@@ -264,8 +264,8 @@ function useDemoWallet() {
 				clearDialog();
 
 				showFeedback(
-					`Solicitação fictícia de ${purchase.service.name.toLowerCase()} ` +
-						'aceita. Nenhuma máquina física foi acionada.',
+					`Solicitação de ${purchase.service.name.toLowerCase()} ` +
+						'concluída!',
 				);
 			}
 		} catch (error) {
