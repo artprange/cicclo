@@ -72,7 +72,7 @@ function WalletSkeleton({ compact }: WalletSkeletonProps) {
 		<Animated.View
 			accessible
 			accessibilityRole="progressbar"
-			accessibilityLabel="Carregando saldo e serviços"
+			accessibilityLabel="Carregando serviços e saldo"
 			accessibilityState={{ busy: true }}
 			style={[styles.container, { opacity }]}
 		>
@@ -85,6 +85,7 @@ function WalletSkeleton({ compact }: WalletSkeletonProps) {
 						key={index}
 						style={styles.card}
 					>
+						<View style={styles.icon} />
 						<View style={styles.line} />
 						<View style={styles.price} />
 						<View style={styles.line} />

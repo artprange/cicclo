@@ -38,6 +38,9 @@ const styles = StyleSheet.create({
 	disabledLabel: {
 		color: Colors.DISABLED_TEXT,
 	},
+	brand: {
+		backgroundColor: Colors.BRAND_PURPLE,
+	},
 });
 
 export { styles };

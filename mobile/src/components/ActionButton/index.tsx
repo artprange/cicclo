@@ -25,6 +25,7 @@ function ActionButton({
 			style={({ pressed }) => [
 				styles.button,
 				isSecondary && styles.secondary,
+				variant === ButtonVariantEnum.BRAND && styles.brand,
 				pressed && !isDisabled && styles.pressed,
 				isDisabled && styles.disabled,
 			]}

@@ -13,13 +13,16 @@ import {
 
 import { ActionButton } from '../../components/ActionButton';
 import { ButtonVariantEnum } from '../../components/ActionButton/types';
+import { ServiceIcon } from '../../components/ServiceIcon';
 import { WalletSkeleton } from '../../components/WalletSkeleton';
 import { useDemoWallet } from '../../hooks/useDemoWallet';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { styles } from './styles';
+import { BrandLogo } from '../../components/BrandLogo';
 
 const ScreenConstants = {
 	COMPACT_WIDTH: 640,
+	TOAST_BOTTOM_SPACING: 16,
 } as const;
 
 function WalletScreen() {
@@ -53,9 +56,11 @@ function WalletScreen() {
 
 	const modalVisible = selectedService !== null || isResetOpen;
 
+	const canCloseDialog = !isSubmitting && operationError === null;
+
 	const dialogTitle =
 		dialogError?.title ??
-		(isResetOpen ? 'Reiniciar demonstração?' : 'Conferir solicitação');
+		(isResetOpen ? 'Reiniciar demonstração?' : 'Confirmar solicitação');
 
 	const confirmLabel = isSubmitting
 		? 'Aguarde…'
@@ -73,16 +78,7 @@ function WalletScreen() {
 				>
 					<View style={styles.content}>
 						<View style={styles.header}>
-							<Text
-								accessibilityRole="header"
-								style={styles.brand}
-							>
-								cicclo
-							</Text>
-
-							<View style={styles.badge}>
-								<Text style={styles.badgeText}>Demonstração</Text>
-							</View>
+							<BrandLogo />
 						</View>
 
 						<View style={styles.introduction}>
@@ -90,18 +86,18 @@ function WalletScreen() {
 								accessibilityRole="header"
 								style={styles.title}
 							>
-								Sua lavanderia, sem complicação.
+								Roupa limpa, alma leve.
 							</Text>
 
 							<Text style={styles.description}>
-								Escolha o serviço e confira os detalhes antes de continuar.
+								Escolha o cuidado que suas roupas precisam.
 							</Text>
 						</View>
 
 						{isLoading ? (
 							<WalletSkeleton compact={isCompact} />
 						) : requiresNewSession || loadError !== null ? (
-							<View style={styles.sectionHeading}>
+							<View style={styles.loadError}>
 								<Text
 									accessibilityRole="alert"
 									style={styles.description}
@@ -123,7 +119,14 @@ function WalletScreen() {
 						) : (
 							<>
 								<View style={styles.balanceCard}>
-									<Text style={styles.balanceLabel}>Saldo da demonstração</Text>
+									<Text
+										accessibilityRole="header"
+										style={styles.walletTitle}
+									>
+										Minha carteira
+									</Text>
+
+									<Text style={styles.balanceLabel}>Saldo disponível</Text>
 
 									<Text
 										accessibilityLabel={`Saldo disponível: ${balanceLabel}`}
@@ -137,7 +140,6 @@ function WalletScreen() {
 										Carteira fictícia · sem pagamentos reais
 									</Text>
 								</View>
-
 								<View style={styles.sectionHeading}>
 									<Text
 										accessibilityRole="header"
@@ -159,25 +161,41 @@ function WalletScreen() {
 											key={service.id}
 											style={styles.serviceCard}
 										>
-											<Text style={styles.serviceEyebrow}>AUTOATENDIMENTO</Text>
+											<View style={isCompact && styles.serviceIconCompact}>
+												<ServiceIcon serviceId={service.id} />
+											</View>
 
 											<Text
 												accessibilityRole="header"
-												style={styles.serviceName}
+												style={[
+													styles.serviceName,
+													isCompact && styles.serviceTextCompact,
+												]}
 											>
 												{service.name}
 											</Text>
 
-											<Text style={styles.servicePrice}>
+											<Text
+												style={[
+													styles.servicePrice,
+													isCompact && styles.serviceTextCompact,
+												]}
+											>
 												{formatCurrency(service.priceCents)}
 											</Text>
 
-											<Text style={styles.serviceCaption}>
+											<Text
+												style={[
+													styles.serviceCaption,
+													isCompact && styles.serviceTextCompact,
+												]}
+											>
 												Valor por solicitação
 											</Text>
 
 											<ActionButton
 												label={`Solicitar ${service.name.toLowerCase()}`}
+												variant={ButtonVariantEnum.BRAND}
 												disabled={!canInteract}
 												onPress={() => selectService(service)}
 											/>
@@ -197,7 +215,14 @@ function WalletScreen() {
 				</ScrollView>
 
 				{feedback !== null && (
-					<View style={[styles.toast, { bottom: insets.bottom + 16 }]}>
+					<View
+						style={[
+							styles.toast,
+							{
+								bottom: insets.bottom + ScreenConstants.TOAST_BOTTOM_SPACING,
+							},
+						]}
+					>
 						<Text
 							accessibilityLiveRegion="polite"
 							style={styles.toastText}
@@ -224,14 +249,42 @@ function WalletScreen() {
 				onRequestClose={closeDialog}
 			>
 				<SafeAreaView style={styles.overlay}>
-					<ScrollView contentContainerStyle={styles.modalContainer}>
+					<ScrollView
+						contentContainerStyle={styles.modalContainer}
+						keyboardShouldPersistTaps="handled"
+					>
+						<Pressable
+							accessible={false}
+							disabled={!canCloseDialog}
+							onPress={closeDialog}
+							style={styles.modalBackdrop}
+						/>
+
 						<View
 							accessibilityViewIsModal
 							style={styles.modalCard}
 						>
-							<Text style={styles.serviceEyebrow}>
-								{dialogError !== null ? 'ATENÇÃO' : 'CONFIRMAÇÃO'}
-							</Text>
+							<View style={styles.modalHeader}>
+								<Text style={styles.serviceEyebrow}>
+									{dialogError !== null ? 'ATENÇÃO' : 'CONFIRMAÇÃO'}
+								</Text>
+
+								<Pressable
+									accessibilityRole="button"
+									accessibilityLabel="Fechar diálogo"
+									accessibilityState={{
+										disabled: !canCloseDialog,
+									}}
+									disabled={!canCloseDialog}
+									onPress={closeDialog}
+									style={[
+										styles.modalClose,
+										!canCloseDialog && styles.modalCloseDisabled,
+									]}
+								>
+									<Text style={styles.modalCloseText}>Fechar</Text>
+								</Pressable>
+							</View>
 
 							<Text
 								accessibilityRole="header"
@@ -272,7 +325,7 @@ function WalletScreen() {
 									<Text style={styles.description}>
 										{isResetOpen
 											? 'O saldo desta sessão voltará ao valor inicial e as solicitações anteriores serão apagadas. Outras sessões não serão afetadas.'
-											: 'O valor será descontado da sua carteira fictícia após a confirmação da solicitação.'}
+											: 'O valor será descontado da sua carteira fictícia após a confirmação. Nenhuma máquina física será acionada.'}
 									</Text>
 
 									{operationError !== null && (
@@ -287,14 +340,15 @@ function WalletScreen() {
 									<View style={styles.modalActions}>
 										<ActionButton
 											label={confirmLabel}
+											variant={ButtonVariantEnum.BRAND}
 											loading={isSubmitting}
 											onPress={() => void confirmOperation()}
 										/>
 
 										<ActionButton
-											label="Voltar"
+											label="Cancelar"
 											variant={ButtonVariantEnum.SECONDARY}
-											disabled={isSubmitting || operationError !== null}
+											disabled={!canCloseDialog}
 											onPress={closeDialog}
 										/>
 									</View>

@@ -1,8 +1,14 @@
+const BrandColors = {
+	PURPLE: '#634A73',
+} as const;
+
 const Colors = {
 	PRIMARY: '#FA541C',
 	PRIMARY_DARK: '#B3200E',
 	PRIMARY_DARKER: '#770508',
 	PRIMARY_LIGHT: '#FEE9D1',
+	BRAND_PURPLE: BrandColors.PURPLE,
+	WALLET_BACKGROUND: BrandColors.PURPLE,
 	BACKGROUND: '#F4F6F8',
 	SURFACE: '#FFFFFF',
 	TEXT: '#1C252E',
