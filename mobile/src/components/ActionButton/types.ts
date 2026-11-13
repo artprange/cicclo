@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react-native';
+
 enum ButtonVariantEnum {
 	PRIMARY = 'primary',
 	SECONDARY = 'secondary',
@@ -10,6 +12,7 @@ type ActionButtonProps = {
 	disabled?: boolean;
 	variant?: ButtonVariantEnum;
 	loading?: boolean;
+	icon?: LucideIcon;
 };
 
 export { ButtonVariantEnum };

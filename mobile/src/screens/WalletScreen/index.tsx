@@ -19,6 +19,9 @@ import { useDemoWallet } from '../../hooks/useDemoWallet';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { styles } from './styles';
 import { BrandLogo } from '../../components/BrandLogo';
+import { RotateCcw, Sparkles, Wallet } from 'lucide-react-native';
+
+import { Colors } from '../../theme/colors';
 
 const ScreenConstants = {
 	COMPACT_WIDTH: 640,
@@ -73,21 +76,47 @@ function WalletScreen() {
 	return (
 		<>
 			<SafeAreaView style={styles.safeArea}>
+				{isCompact && (
+					<View style={styles.mobileNavbar}>
+						<BrandLogo width={84} />
+					</View>
+				)}
 				<ScrollView
 					contentContainerStyle={[styles.page, isCompact && styles.compactPage]}
 				>
-					<View style={styles.content}>
-						<View style={styles.header}>
-							<BrandLogo />
-						</View>
+					<View style={[styles.content, isCompact && styles.contentCompact]}>
+						{!isCompact && (
+							<View style={styles.header}>
+								<BrandLogo />
+							</View>
+						)}
 
 						<View style={styles.introduction}>
-							<Text
-								accessibilityRole="header"
-								style={styles.title}
-							>
-								Roupa limpa, alma leve.
-							</Text>
+							<View style={styles.headingWithIcon}>
+								<View
+									aria-hidden
+									accessibilityElementsHidden
+									importantForAccessibility="no-hide-descendants"
+									pointerEvents="none"
+								>
+									<Sparkles
+										size={isCompact ? 20 : 24}
+										strokeWidth={1.8}
+										color={Colors.BRAND_PURPLE}
+									/>
+								</View>
+
+								<Text
+									accessibilityRole="header"
+									style={[
+										styles.title,
+										isCompact && styles.titleCompact,
+										styles.headingText,
+									]}
+								>
+									Roupa limpa, alma leve.
+								</Text>
+							</View>
 
 							<Text style={styles.description}>
 								Escolha o cuidado que suas roupas precisam.
@@ -118,23 +147,97 @@ function WalletScreen() {
 							</View>
 						) : (
 							<>
-								<View style={styles.balanceCard}>
-									<Text
-										accessibilityRole="header"
-										style={styles.walletTitle}
-									>
-										Minha carteira
-									</Text>
+								<View
+									style={[
+										styles.balanceCard,
+										isCompact && styles.balanceCardCompact,
+									]}
+								>
+									{isCompact ? (
+										<>
+											<View style={styles.walletDetailsCompact}>
+												<View style={styles.headingWithIcon}>
+													<View
+														aria-hidden
+														accessibilityElementsHidden
+														importantForAccessibility="no-hide-descendants"
+														pointerEvents="none"
+													>
+														<Wallet
+															size={isCompact ? 18 : 22}
+															strokeWidth={1.8}
+															color={Colors.SURFACE}
+														/>
+													</View>
 
-									<Text style={styles.balanceLabel}>Saldo disponível</Text>
+													<Text
+														accessibilityRole="header"
+														style={[
+															isCompact
+																? styles.walletTitleCompact
+																: styles.walletTitle,
+															styles.headingText,
+															styles.walletHeadingText,
+														]}
+													>
+														Minha carteira
+													</Text>
+												</View>
 
-									<Text
-										accessibilityLabel={`Saldo disponível: ${balanceLabel}`}
-										accessibilityLiveRegion="polite"
-										style={styles.balanceValue}
-									>
-										{balanceLabel}
-									</Text>
+												<Text style={styles.balanceLabelCompact}>
+													Saldo disponível
+												</Text>
+											</View>
+
+											<Text
+												accessibilityLabel={`Saldo disponível: ${balanceLabel}`}
+												accessibilityLiveRegion="polite"
+												style={styles.balanceValueCompact}
+											>
+												{balanceLabel}
+											</Text>
+										</>
+									) : (
+										<>
+											<View style={styles.headingWithIcon}>
+												<View
+													aria-hidden
+													accessibilityElementsHidden
+													importantForAccessibility="no-hide-descendants"
+													pointerEvents="none"
+												>
+													<Wallet
+														size={isCompact ? 18 : 22}
+														strokeWidth={1.8}
+														color={Colors.SURFACE}
+													/>
+												</View>
+
+												<Text
+													accessibilityRole="header"
+													style={[
+														isCompact
+															? styles.walletTitleCompact
+															: styles.walletTitle,
+														styles.headingText,
+														styles.walletHeadingText,
+													]}
+												>
+													Minha carteira
+												</Text>
+											</View>
+
+											<Text style={styles.balanceLabel}>Saldo disponível</Text>
+
+											<Text
+												accessibilityLabel={`Saldo disponível: ${balanceLabel}`}
+												accessibilityLiveRegion="polite"
+												style={styles.balanceValue}
+											>
+												{balanceLabel}
+											</Text>
+										</>
+									)}
 								</View>
 								<View style={styles.sectionHeading}>
 									<Text
@@ -201,6 +304,7 @@ function WalletScreen() {
 
 								<ActionButton
 									label="Reiniciar demonstração"
+									icon={RotateCcw}
 									variant={ButtonVariantEnum.SECONDARY}
 									disabled={!canInteract}
 									onPress={openReset}

@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { Colors } from '../../theme/colors';
 import { styles } from './styles';
@@ -11,9 +11,16 @@ function ActionButton({
 	disabled = false,
 	loading = false,
 	variant = ButtonVariantEnum.PRIMARY,
+	icon: Icon,
 }: ActionButtonProps) {
 	const isSecondary = variant === ButtonVariantEnum.SECONDARY;
 	const isDisabled = disabled || loading;
+
+	const iconColor = isDisabled
+		? Colors.DISABLED_TEXT
+		: isSecondary
+			? Colors.TEXT
+			: Colors.SURFACE;
 
 	return (
 		<Pressable
@@ -30,12 +37,25 @@ function ActionButton({
 				isDisabled && styles.disabled,
 			]}
 		>
-			{loading && (
+			{loading ? (
 				<ActivityIndicator
 					size="small"
 					color={Colors.DISABLED_TEXT}
 				/>
-			)}
+			) : Icon ? (
+				<View
+					aria-hidden
+					accessibilityElementsHidden
+					importantForAccessibility="no-hide-descendants"
+					pointerEvents="none"
+				>
+					<Icon
+						size={20}
+						strokeWidth={1.8}
+						color={iconColor}
+					/>
+				</View>
+			) : null}
 
 			<Text
 				style={[

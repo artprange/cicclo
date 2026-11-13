@@ -138,8 +138,8 @@ async function request<T>(
 
 		throw new ApiError(
 			controller.signal.aborted
-				? 'A API demorou para responder. Tente novamente.'
-				: 'Não foi possível acessar a API. Verifique a conexão.',
+				? 'NOsso sistema está instável. Tente novamente mais tarde.'
+				: 'Alguma coisa quebrou :(',
 			ApiErrorCodeEnum.NETWORK_ERROR,
 			true,
 		);
