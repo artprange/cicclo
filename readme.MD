@@ -263,8 +263,3 @@ o identificador do ticket mantém essa relação.
 | CIC-09 | Empacotamento do frontend e da API em Docker      | Concluído |
 | CIC-10 | Deploy público e validação da demonstração        | Concluído |
 | CIC-11 | Documentação e revisão final                      | Concluído |
-| CIC-12 | Validação manual no Expo Go                       | Pendente: incompatibilidade de SDK no iPad |
-
-A branch `feat/ui-tests` acrescenta os testes automatizados do frontend e sua
-execução no build Docker. Ela complementa os testes de backend da CIC-05 e
-as verificações de integração e UX das CIC-07 e CIC-08.
