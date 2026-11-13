@@ -22,6 +22,7 @@ de máquinas físicas.
 - TypeScript em modo estrito.
 - ASP.NET Core / C# / .NET 10.
 - xUnit para testes de domínio, integração e concorrência.
+- Jest, jest-expo e React Native Testing Library para testes do frontend.
 - Docker multi-stage para servir frontend e API na mesma origem.
 - Render para hospedagem da demonstração.
 
@@ -68,6 +69,10 @@ EXPO_PUBLIC_API_URL=http://localhost:10000
 ### Expo Go
 
 Use uma versão do Expo Go compatível com o SDK do projeto.
+
+A validação em dispositivo está pendente: na tentativa em iPad, o Expo Go
+instalado exigia SDK 58 e este projeto utiliza SDK 57. Os passos abaixo são
+instruções de execução, não uma confirmação de teste em dispositivo.
 
 No arquivo `mobile/.env.local`, substitua `localhost` pelo IP do computador
 na rede local:
@@ -121,14 +126,47 @@ No diretório `mobile`:
 
 ```bash
 npm run typecheck
+npm test
 env -u EXPO_PUBLIC_API_URL EXPO_NO_DOTENV=1 npm run build:web
 ```
 
 Os testes do backend cobrem saldo inicial, compras, saldo insuficiente,
 idempotência, isolamento de sessões, concorrência, reset e contratos HTTP.
 
-O Dockerfile também executa os testes do backend, a verificação de tipos
-e a exportação web durante o build.
+Os testes do frontend cobrem:
+
+- Carregamento e skeleton, apresentação dos preços e saldo recebido da API.
+- Confirmação e cancelamento de compras, bloqueio de cliques repetidos e
+  duas confirmações antes de uma nova renderização.
+- Saldo insuficiente e preservação da chave de idempotência em tentativas
+  após falha de rede, com uma chave diferente para uma nova compra.
+- Confirmação, cancelamento e nova tentativa de reset.
+- Recuperação de sessão expirada no carregamento e durante uma compra.
+- Contratos HTTP, respostas inválidas, centavos inválidos, timeout e erros de rede.
+- Uso de `/api/*` na Web em produção, mesmo com uma URL local configurada.
+- Armazenamento apenas do identificador da sessão e fallback em memória
+  quando o navegador bloqueia o armazenamento.
+
+Os arquivos `*.test.ts` e `*.test.tsx` ficam junto aos módulos testados em
+`mobile/src`. Os testes da tela usam componentes, hook e cliente HTTP reais,
+com respostas de `fetch` simuladas e adaptadores nativos de teste. Não é
+necessário iniciar a API nem acessar o deploy para executá-los.
+
+Para acompanhar alterações ou gerar o relatório de cobertura, em `mobile`:
+
+```bash
+npm run test:watch
+npm run test:coverage
+```
+
+A cobertura fica em `mobile/coverage/lcov-report/index.html` e considera o
+cliente HTTP, armazenamento de sessão, hook da carteira e tela principal.
+Esses testes não substituem uma validação visual em navegador ou dispositivo,
+nem são testes ponta a ponta contra a API real.
+
+O Dockerfile executa os testes do frontend e do backend, a verificação de tipos
+e a exportação web durante o build. Uma falha em qualquer etapa impede a
+geração da imagem final.
 
 ## Arquitetura e decisões
 
@@ -199,7 +237,8 @@ as imagens e bases de vulnerabilidades são atualizadas.
 ## Uso de IA
 
 O Codex foi utilizado como apoio para planejamento incremental, sugestões de
-código no back-end, revisão, diagnóstico de erros, execução de verificações e documentação.
+código no backend e frontend, revisão, diagnóstico de erros, implementação
+dos testes automatizados do frontend, execução de verificações e documentação.
 
 A implementação foi conduzida com revisão humana, ajustes de organização, estrutura da aplicação
 e estilo, testes automatizados e validação do fluxo da aplicação.
@@ -224,4 +263,8 @@ o identificador do ticket mantém essa relação.
 | CIC-09 | Empacotamento do frontend e da API em Docker      | Concluído |
 | CIC-10 | Deploy público e validação da demonstração        | Concluído |
 | CIC-11 | Documentação e revisão final                      | Concluído |
-| CIC-12 | Validação manual no Expo Go                       | Concluído |
+| CIC-12 | Validação manual no Expo Go                       | Pendente: incompatibilidade de SDK no iPad |
+
+A branch `feat/ui-tests` acrescenta os testes automatizados do frontend e sua
+execução no build Docker. Ela complementa os testes de backend da CIC-05 e
+as verificações de integração e UX das CIC-07 e CIC-08.

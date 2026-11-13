@@ -16,6 +16,7 @@ RUN npm ci
 COPY mobile/ ./
 
 RUN npm run typecheck \
+    && npm test \
     && npm run build:web
 
 RUN test -f dist/index.html \
