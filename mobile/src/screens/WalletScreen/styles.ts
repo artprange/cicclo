@@ -28,12 +28,6 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		gap: 12,
 	},
-	brand: {
-		fontSize: 40,
-		fontWeight: '800',
-		letterSpacing: -2,
-		color: Colors.PRIMARY,
-	},
 	badge: {
 		paddingHorizontal: 14,
 		paddingVertical: 8,
@@ -58,26 +52,8 @@ const styles = StyleSheet.create({
 		lineHeight: 24,
 		color: Colors.TEXT_SECONDARY,
 	},
-	balanceCard: {
-		padding: 28,
-		borderRadius: 24,
-		gap: 10,
-		backgroundColor: Colors.PRIMARY_DARK,
-	},
-	balanceLabel: {
-		fontSize: 16,
-		fontWeight: '600',
-		color: Colors.SURFACE,
-	},
-	balanceValue: {
-		fontSize: 44,
-		fontWeight: '800',
-		color: Colors.SURFACE,
-	},
-	balanceCaption: {
-		fontSize: 14,
-		lineHeight: 21,
-		color: Colors.SURFACE,
+	loadError: {
+		gap: 20,
 	},
 	sectionHeading: {
 		gap: 6,
@@ -126,21 +102,43 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: Colors.TEXT_SECONDARY,
 	},
-	feedback: {
-		padding: 18,
-		borderRadius: 14,
-		backgroundColor: Colors.PRIMARY_LIGHT,
+	serviceIconCompact: {
+		alignSelf: 'center',
+	},
+	serviceTextCompact: {
+		textAlign: 'center',
+	},
+	balanceCard: {
+		padding: 28,
+		borderRadius: 24,
+		gap: 10,
+		backgroundColor: Colors.WALLET_BACKGROUND,
+	},
+	walletTitle: {
+		fontSize: 22,
+		fontWeight: '700',
+		marginBottom: 4,
+		color: Colors.SURFACE,
+	},
+	balanceLabel: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: Colors.SURFACE,
+	},
+	balanceValue: {
+		fontSize: 44,
+		fontWeight: '800',
+		color: Colors.SURFACE,
+	},
+	balanceCaption: {
+		fontSize: 14,
+		lineHeight: 21,
+		color: Colors.SURFACE,
 	},
 	feedbackText: {
 		fontSize: 15,
 		lineHeight: 23,
 		color: Colors.PRIMARY_DARKER,
-	},
-
-	previewTitle: {
-		fontSize: 14,
-		fontWeight: '700',
-		color: Colors.TEXT,
 	},
 	overlay: {
 		flex: 1,
@@ -152,6 +150,13 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		padding: 24,
 	},
+	modalBackdrop: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	},
 	modalCard: {
 		width: '100%',
 		maxWidth: 440,
@@ -159,6 +164,27 @@ const styles = StyleSheet.create({
 		borderRadius: 24,
 		backgroundColor: Colors.SURFACE,
 		gap: 20,
+	},
+	modalHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		flexWrap: 'wrap',
+		gap: 12,
+	},
+	modalClose: {
+		minWidth: 64,
+		minHeight: 44,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	modalCloseDisabled: {
+		opacity: 0.45,
+	},
+	modalCloseText: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: Colors.TEXT_SECONDARY,
 	},
 	modalTitle: {
 		fontSize: 26,
@@ -174,7 +200,7 @@ const styles = StyleSheet.create({
 	summaryPrice: {
 		fontSize: 28,
 		fontWeight: '700',
-		color: Colors.PRIMARY_DARK,
+		color: Colors.BRAND_PURPLE,
 	},
 	modalActions: {
 		gap: 12,

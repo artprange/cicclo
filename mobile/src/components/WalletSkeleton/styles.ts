@@ -7,8 +7,14 @@ const styles = StyleSheet.create({
 		gap: 28,
 	},
 	balance: {
-		height: 172,
+		height: 220,
 		borderRadius: 24,
+		backgroundColor: Colors.BORDER,
+	},
+	icon: {
+		width: 76,
+		height: 76,
+		borderRadius: 26,
 		backgroundColor: Colors.BORDER,
 	},
 	heading: {

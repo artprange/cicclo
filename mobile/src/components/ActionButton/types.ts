@@ -1,6 +1,7 @@
 enum ButtonVariantEnum {
 	PRIMARY = 'primary',
 	SECONDARY = 'secondary',
+	BRAND = 'brand',
 }
 
 type ActionButtonProps = {
