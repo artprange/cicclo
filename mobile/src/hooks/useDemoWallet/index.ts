@@ -263,10 +263,7 @@ function useDemoWallet() {
 				setBalanceCents(order.balanceAfterCents);
 				clearDialog();
 
-				showFeedback(
-					`Solicitação fictícia de ${purchase.service.name.toLowerCase()} ` +
-						'aceita. Nenhuma máquina física foi acionada.',
-				);
+				showFeedback(`Solicitação de ${purchase.service.name.toLowerCase()} `);
 			}
 		} catch (error) {
 			if (
