@@ -203,3 +203,33 @@ código no back-end, revisão, diagnóstico de erros, execução de verificaçõ
 
 A implementação foi conduzida com revisão humana, ajustes de organização, estrutura da aplicação
 e estilo, testes automatizados e validação do fluxo da aplicação.
+
+## Roadmap e organização das entregas
+
+O desenvolvimento foi dividido em tickets identificados por `CIC-XX`.
+Esses identificadores relacionam as branches e os pull requests ao escopo
+de cada entrega. Os prefixos das branches variaram durante o desenvolvimento;
+o identificador do ticket mantém essa relação.
+
+| Ticket | Escopo                                            | Status              |
+| ------ | ------------------------------------------------- | ------------------- |
+| CIC-01 | Estrutura inicial do monorepo, Expo, API e testes | Concluído           |
+| CIC-02 | Catálogo de serviços e modelos de domínio         | Concluído           |
+| CIC-03 | Sessões independentes e consulta de carteira      | Concluído           |
+| CIC-04 | Compras atômicas e idempotentes                   | Concluído           |
+| CIC-05 | Testes de regras, integração e concorrência       | Concluído           |
+| CIC-06 | Interface de carteira e serviços                  | Concluído           |
+| CIC-07 | Integração real entre frontend e API              | Concluído           |
+| CIC-08 | Reset da demonstração e refinamentos de UX        | Concluído           |
+| CIC-09 | Empacotamento do frontend e da API em Docker      | Concluído           |
+| CIC-10 | Deploy público e validação da demonstração        | Concluído           |
+| CIC-11 | Documentação e revisão final                      | Em andamento        |
+| CIC-12 | Validação manual no Expo Go                       | Opcional — pendente |
+| CIC-13 | Histórico recente de pedidos                      | Opcional — pendente |
+| CIC-14 | Integração contínua com GitHub Actions            | Opcional — pendente |
+| CIC-15 | Polimento visual adicional                        | Opcional — pendente |
+
+Os tickets CIC-01 a CIC-11 compõem a entrega principal.
+CIC-12 a CIC-14 são melhorias de prioridade secundária; CIC-15 tem
+prioridade menor. Os itens opcionais não representam funcionalidades
+já implementadas.
